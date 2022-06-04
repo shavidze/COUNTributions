@@ -2,17 +2,30 @@ import RepositoryRetriever.{RepositoryEnv, fetchRepositories}
 import ContributorRetriever.{ContributorsEnv, fetchContributors}
 import zio.*
 import zhttp.http.*
-import zhttp.service.Server
-import zio.console.putStrLn
+import zhttp.service.{Client, Server}
+import zio.console.{Console, getStrLn, putStrLn}
 
 object Main extends App {
 
-  val env: ZLayer[Any, Nothing, RepositoryEnv & ContributorsEnv] = RepositoryRetriever.live ++ ContributorRetriever.live
+  type ServicesEnv = RepositoryEnv & ContributorsEnv
 
-  override def run(args: List[String]) = Server.start(8080, http).provideLayer(env).exitCode
+  private def organizationUrl(organization: String, page: Int): String = s"https://api.github.com/orgs/$organization/repos?per_page=100&page=$page"
 
-  val http: Http[Any, Nothing, Request, Response] = Http.collect[Request] {
-    case Method.GET -> _ / "org" / orgName / "contributors" => ???
+  private def contributorsUrl(organization: String, repositoryName: String, page: Int): String = s"https://api.github.com/repos/$organization/$repositoryName/contributors?per_page=100&page=$page"
+
+  val env: ZLayer[Any, Nothing, ServicesEnv] = RepositoryRetriever.live ++ ContributorRetriever.live
+
+  override def run(args: List[String]) = Server.start(8080, http).provideCustomLayer(env).exitCode
+
+  val http: Http[ServicesEnv with Console, Throwable, Request, Response] = Http.collectZIO[Request] {
+    case Method.GET -> _ / "org" / orgName / "contributors" => {
+      for {
+        _    <- fetchRepositories("some organization", 1)
+        _    <- fetchContributors("some repo name", 1)
+        resp <- ZIO.succeed(Response.text("yes"))
+      } yield resp
+      
+    }
   }
 
 }
@@ -27,7 +40,9 @@ object RepositoryRetriever {
 
   val live: ZLayer[Any, Nothing, RepositoryEnv] = ZLayer.succeed {
     new Service {
-      override def fetchRepositories(organizationName: String, pageCount: Int): Task[Unit] = Task.succeed(())
+      override def fetchRepositories(organizationName: String, pageCount: Int): Task[Unit] = Task.succeed {
+        println("fetching repositories...")
+      }
     }
   }
 
@@ -46,7 +61,9 @@ object ContributorRetriever {
 
   val live: ZLayer[Any, Nothing, ContributorsEnv] = ZLayer.succeed {
     new Service {
-      override def fetchContributors(repositoryName: String, pageCount: Int): Task[Unit] = Task.succeed(())
+      override def fetchContributors(repositoryName: String, pageCount: Int): Task[Unit] = Task.succeed {
+        println("fetching contributors...")
+      }
     }
   }
 
