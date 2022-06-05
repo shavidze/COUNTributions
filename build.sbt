@@ -7,6 +7,8 @@ val ZHTTPVersion = "1.0.0.0-RC27"
 libraryDependencies += "dev.zio" %% "zio" % "1.0.14"
 libraryDependencies += "com.softwaremill.sttp.client3" %% "circe" % "3.6.2"
 
+libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+
 val circeVersion = "0.14.1"
 
 libraryDependencies ++= Seq(
