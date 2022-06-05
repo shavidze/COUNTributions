@@ -14,12 +14,7 @@ import Utils._
 
 object Main extends zio.App {
 
-  def organizationUrl(organization: String, page: Int = 1): String = s"https://api.github.com/orgs/$organization/repos?per_page=100&page=$page"
-
-  def contributorsUrl(organization: String, repositoryName: String, page: Int): String = s"https://api.github.com/repos/$organization/$repositoryName/contributors?per_page=100&page=$page"
-
   val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-
   implicit val token: Token = GithubTokenLoader.loadToken
 
   private val httpApp = Http.collectZIO[zhttp.http.Request] {
@@ -32,7 +27,7 @@ object Main extends zio.App {
         _            <- putStrLn("got contributors") *> putStrLn("processing contributors")
         result       <- ZIO.succeed(contributors.map(_.toResult))
         sortedResult <- ZIO.succeed(result.toSeq.sortWith(_.contributions > _.contributions))
-        resultAsJson <- ZIO.effect(sortedResult.asJson)
+        resultAsJson <- ZIO.succeed(sortedResult.asJson)
         _            <- putStrLn("done") *> putStrLn(s"result = $resultAsJson")
         response     <- ZIO.succeed(zhttp.http.Response.text(s"$resultAsJson"))
       } yield response
@@ -46,8 +41,6 @@ object Main extends zio.App {
   override def run(args: List[String]): URIO[ZEnv, ExitCode] =
     Server.start(8080, httpApp).provideLayer(httpAppLayer).exitCode
 }
-
-
 
 
 

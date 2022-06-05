@@ -1,5 +1,5 @@
 import Utils.{RequestBuilder, Token}
-import Main.{backend, organizationUrl}
+import Main.backend
 import io.circe.generic.auto._
 import sttp.client3.circe.asJson
 import zio.{Has, Task, ZIO, ZLayer}
@@ -21,7 +21,7 @@ object RepositoriesRetriever {
           def loop(page: Int, responses: Int, accumulatedRepositories: Vector[String]): Vector[String] = {
             if (responses < 100) accumulatedRepositories
             else {
-              val url = organizationUrl(organizationName, page)
+              val url = URLBuilder.buildOrganizationURL(organizationName, page)
               val jsonResponse = RequestBuilder.build(url)
                 .response(asJson[Vector[Repository]])
                 .send(backend)

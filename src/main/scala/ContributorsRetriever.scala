@@ -1,5 +1,5 @@
 import Utils.{RequestBuilder, Token}
-import Main.{backend, contributorsUrl}
+import Main.backend
 import sttp.client3.circe.asJson
 import zio.{Has, Task, ZIO, ZLayer}
 import io.circe.generic.auto._
@@ -22,7 +22,7 @@ object ContributorsRetriever {
         def loop(page: Int, responses: Int, accumulatedContributions: Map[String, Double]): Map[String, Double] = {
           if (isLastRequest(responses)) accumulatedContributions
           else {
-            val url = contributorsUrl(organizationName, repositoryName, page)
+            val url = URLBuilder.buildContributorsURL(organizationName, repositoryName, page)
             val response = RequestBuilder.build(url)
               .response(asJson[Vector[Contributor]])
               .send(backend)
