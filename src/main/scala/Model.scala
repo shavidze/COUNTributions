@@ -144,3 +144,17 @@ case class Result (
                   contributions: Double
                   )
 
+
+sealed trait URL {
+  def value: String
+  def page: Int
+}
+
+case class RepositoriesURL(organization: String, page: Int) extends URL {
+  override def value: String = s"https://api.github.com/orgs/$organization/repos?per_page=100&page=$page"
+}
+
+case class ContributorsURL(organization: String, repositoryName: String, page: Int) extends URL {
+  override def value: String = s"https://api.github.com/repos/$organization/$repositoryName/contributors?per_page=100&page=$page"
+}
+
