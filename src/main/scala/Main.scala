@@ -20,16 +20,17 @@ object Main extends zio.App {
   private val httpApp = Http.collectZIO[zhttp.http.Request] {
     case Method.GET -> _ / "org" / organizationName / "contributors" =>
       for {
-        _            <- putStrLn(s"fetching repositories for $organizationName")
-        repositories <- RepositoriesRetriever.fetchRepositories(organizationName)
-        _            <- putStrLn(s"got repositories") *> putStrLn("fetching contributors in parallel")
-        contributors <- ZIO.foreachPar(repositories)(repository => ContributorsRetriever.fetchContributors(organizationName, repository)).map(_.reduce(MapCombiner.combine))
-        _            <- putStrLn("got contributors") *> putStrLn("processing contributors")
-        result       <- ZIO.succeed(contributors.map(_.toResult))
-        sortedResult <- ZIO.succeed(result.toSeq.sortWith(_.contributions > _.contributions))
-        resultAsJson <- ZIO.succeed(sortedResult.asJson)
-        _            <- putStrLn("done") *> putStrLn(s"result = $resultAsJson")
-        response     <- ZIO.succeed(zhttp.http.Response.text(s"$resultAsJson"))
+        _                <- putStrLn(s"fetching repositories for $organizationName")
+        repositories     <- RepositoriesRetriever.fetchRepositories(organizationName)
+        _                <- putStrLn(s"got repositories") *> putStrLn("fetching contributors in parallel")
+        contributorsURLs <- ZIO.succeed(repositories.map(repo => URLBuilder.buildContributorsURL(organizationName, repo)))
+        contributors     <- ZIO.foreachPar(contributorsURLs)(url => ContributorsRetriever.fetchContributors(url)).map(_.reduce(MapCombiner.combine))
+        _                <- putStrLn("got contributors") *> putStrLn("processing contributors")
+        result           <- ZIO.succeed(contributors.map(_.toResult))
+        sortedResult     <- ZIO.succeed(result.toSeq.sortWith(_.contributions > _.contributions))
+        resultAsJson     <- ZIO.succeed(sortedResult.asJson)
+        _                <- putStrLn("done") *> putStrLn(s"result = $resultAsJson")
+        response         <- ZIO.succeed(zhttp.http.Response.text(s"$resultAsJson"))
       } yield response
   }
 
