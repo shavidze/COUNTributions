@@ -9,6 +9,11 @@ class MapCombinerTest extends FunSuite {
     assertEquals(actual, Map.empty[String, Double])
   }
 
+  test("combining empty an non-empty map should return non-empty map") {
+    val actual = MapCombiner.combine(Map.empty[String, Double], Map("Poland" -> 10.0, "Georgia" -> 10.0))
+    assertEquals(actual, Map("Poland" -> 10.0, "Georgia" -> 10.0))
+  }
+
   test("combining maps with different keys should return the new map with both keys") {
     val m1 = Map("ZIO" -> 10.0)
     val m2 = Map("Cats" -> 10.0)
