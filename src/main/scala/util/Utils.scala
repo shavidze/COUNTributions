@@ -6,7 +6,7 @@ import sttp.client3.{Identity, RequestT, UriContext, basicRequest}
 object Utils {
 
   object GithubTokenLoader {
-    def loadToken: Token = Token(scala.util.Properties.envOrElse("GH_TOKEN", ""))
+    def loadToken(name: String): Token = Token(scala.util.Properties.envOrElse(name, ""))
   }
 
   case class Token(value: String)

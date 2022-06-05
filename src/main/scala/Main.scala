@@ -17,7 +17,7 @@ import util.{MapCombiner, URLBuilder}
 object Main extends zio.App {
 
   val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-  implicit val token: Token = GithubTokenLoader.loadToken
+  implicit val token: Token = GithubTokenLoader.loadToken("GH_TOKEN")
 
   private val httpApp = Http.collectZIO[zhttp.http.Request] {
     case Method.GET -> _ / "org" / organizationName / "contributors" =>
@@ -39,10 +39,11 @@ object Main extends zio.App {
   val httpServerLayers: ZLayer[Any, Nothing, ChannelFactory with EventLoopGroup] = ChannelFactory.auto ++ EventLoopGroup.auto(8)
   val repositoryLayer: ZLayer[Any, Nothing, RepositoriesEnv] = RepositoriesRetriever.live
   val contributorsLayer: ZLayer[Any, Nothing, ContributorsEnv] = ContributorsRetriever.live
-  val httpAppLayer = httpServerLayers ++ repositoryLayer ++ contributorsLayer ++ Console.live
+
+  val fullLayer = httpServerLayers ++ repositoryLayer ++ contributorsLayer ++ Console.live
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] =
-    Server.start(8080, httpApp).provideLayer(httpAppLayer).exitCode
+    Server.start(8080, httpApp).provideLayer(fullLayer).exitCode
 }
 
 
