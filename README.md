@@ -1,3 +1,5 @@
+Open scalac_assignment/Scala-Task-Scalac.pdf to see the task description
+
 **Local setup**:
 
 **1) Clone the repository**
