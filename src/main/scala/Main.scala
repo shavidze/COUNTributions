@@ -1,7 +1,7 @@
 
-import ContributorsRetriever.ContributorsEnv
-import Utils.{GithubTokenLoader, Token}
-import RepositoriesRetriever.RepositoriesEnv
+import service.ContributorsRetriever.ContributorsEnv
+import util.Utils.{GithubTokenLoader, Token}
+import service.RepositoriesRetriever.RepositoriesEnv
 import io.circe.generic.auto._
 import io.circe.syntax.EncoderOps
 import sttp.client3.{HttpClientSyncBackend, Identity, SttpBackend}
@@ -9,7 +9,9 @@ import zhttp.http._
 import zhttp.service.{ChannelFactory, EventLoopGroup, Server}
 import zio._
 import zio.console._
-import Utils._
+import util.Utils._
+import service.{ContributorsRetriever, RepositoriesRetriever}
+import util.{MapCombiner, URLBuilder}
 
 
 object Main extends zio.App {

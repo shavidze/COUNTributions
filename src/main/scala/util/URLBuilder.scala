@@ -1,3 +1,7 @@
+package util
+
+import model.{ContributorsURL, RepositoriesURL}
+
 object URLBuilder {
   def buildOrganizationURL(organization: String, page: Int = 1): RepositoriesURL = RepositoriesURL(organization, page)
 

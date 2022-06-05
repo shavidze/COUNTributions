@@ -1,3 +1,5 @@
+package model
+
 
 case class Owner(
                   login: Option[String],

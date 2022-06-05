@@ -1,3 +1,6 @@
+package util
+
+import model.Result
 import sttp.client3.{Identity, RequestT, UriContext, basicRequest}
 
 object Utils {
@@ -21,4 +24,3 @@ object Utils {
   }
 
 }
-

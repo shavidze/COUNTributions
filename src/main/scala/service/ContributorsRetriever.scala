@@ -1,8 +1,11 @@
-import Utils.{RequestBuilder, Token}
-import Main.backend
+package service
+
+import model.{Contributor, ContributorsURL}
 import sttp.client3.circe.asJson
-import zio.{Has, Task, ZIO, ZLayer}
+import sttp.client3.quick.backend
+import util.Utils.{RequestBuilder, Token}
 import io.circe.generic.auto._
+import zio.{Has, Task, ZIO, ZLayer}
 
 import scala.annotation.tailrec
 
@@ -37,10 +40,10 @@ object ContributorsRetriever {
         loop(url, 100, Map.empty)
       }
 
-        def isLastRequest: Int => Boolean = _ < 100
-      }
-
+      def isLastRequest: Int => Boolean = _ < 100
     }
+
+  }
 
   val test: ZLayer[Any, Nothing, ContributorsEnv] = ZLayer.succeed {
     new Service {

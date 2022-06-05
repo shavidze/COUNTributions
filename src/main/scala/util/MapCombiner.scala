@@ -1,3 +1,5 @@
+package util
+
 object MapCombiner {
   type Count = Map[String, Double]
 
