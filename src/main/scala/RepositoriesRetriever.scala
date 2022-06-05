@@ -1,3 +1,4 @@
+import Utils.{RequestBuilder, Token}
 import Main.{backend, organizationUrl}
 import io.circe.generic.auto._
 import sttp.client3.circe.asJson
@@ -17,23 +18,21 @@ object RepositoriesRetriever {
     new Service {
       override def fetchRepositories(organizationName: String)(implicit token: Token): Task[Vector[String]] = Task.effect {
           @tailrec
-          def loop(page: Int, responses: Int, namesAccumulated: Vector[String]): Vector[String] = {
-            if (responses < 100) namesAccumulated
+          def loop(page: Int, responses: Int, accumulatedRepositories: Vector[String]): Vector[String] = {
+            if (responses < 100) accumulatedRepositories
             else {
               val url = organizationUrl(organizationName, page)
               val jsonResponse = RequestBuilder.build(url)
                 .response(asJson[Vector[Repository]])
                 .send(backend)
-
-              val maybeNames = jsonResponse.body.fold[Vector[String]](_ => Vector.empty, _.flatMap(_.name))
-
-              val responseCount = maybeNames.size
-              if (responseCount < 100) namesAccumulated ++: maybeNames
-              else loop(page + 1, 100, namesAccumulated ++: maybeNames)
+              val repositoryNames = jsonResponse.body.fold[Vector[String]](_ => Vector.empty, _.flatMap(_.name))
+              val responseCount = repositoryNames.size
+              if (responseCount < 100) accumulatedRepositories ++: repositoryNames
+              else loop(page + 1, 100, accumulatedRepositories ++: repositoryNames)
             }
           }
 
-          loop(1, 100, Vector())
+          loop(1, 100, Vector.empty)
         }
       }
     }

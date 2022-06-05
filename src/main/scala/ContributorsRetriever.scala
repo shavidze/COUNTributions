@@ -1,3 +1,4 @@
+import Utils.{RequestBuilder, Token}
 import Main.{backend, contributorsUrl}
 import sttp.client3.circe.asJson
 import zio.{Has, Task, ZIO, ZLayer}
@@ -33,7 +34,7 @@ object ContributorsRetriever {
           }
         }
 
-        loop(1, 100, Map())
+        loop(1, 100, Map.empty)
       }
 
       def isLastRequest: Int => Boolean = _ < 100

@@ -143,3 +143,4 @@ case class Result (
                   name: String,
                   contributions: Double
                   )
+
