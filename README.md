@@ -10,7 +10,7 @@
 
    - **execute**:
       
-      - **vim ~.bash_profile**
+      - **vim ~/.bash_profile**
      
       - **export GH_TOKEN=${your_github_token} (save and exit)**
      
