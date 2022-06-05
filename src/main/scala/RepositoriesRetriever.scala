@@ -22,7 +22,7 @@ object RepositoriesRetriever {
             if (responses < 100) accumulatedRepositories
             else {
               val url = URLBuilder.buildOrganizationURL(organizationName, page)
-              val jsonResponse = RequestBuilder.build(url)
+              val jsonResponse = RequestBuilder.build(url.value)
                 .response(asJson[Vector[Repository]])
                 .send(backend)
               val repositoryNames = jsonResponse.body.fold[Vector[String]](_ => Vector.empty, _.flatMap(_.name))
