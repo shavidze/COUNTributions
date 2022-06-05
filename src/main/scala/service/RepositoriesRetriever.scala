@@ -26,7 +26,7 @@ object RepositoriesRetriever {
         def loop(page: Int, responses: Int, accumulatedRepositories: Vector[String]): Vector[String] = {
           if (responses < 100) accumulatedRepositories
           else {
-            val url = URLBuilder.buildOrganizationURL(organizationName, page)
+            val url = URLBuilder.buildRepositoriesURL(organizationName, page)
             val jsonResponse = RequestBuilder.build(url.value)
               .response(asJson[Vector[Repository]])
               .send(backend)
