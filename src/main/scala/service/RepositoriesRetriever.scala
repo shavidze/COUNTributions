@@ -24,7 +24,7 @@ object RepositoriesRetriever {
       override def fetchRepositories(organizationName: String)(implicit token: Token): Task[Vector[String]] = Task.effect {
         @tailrec
         def loop(page: Int, responses: Int, accumulatedRepositories: Vector[String]): Vector[String] = {
-          if (responses < 100) accumulatedRepositories
+          if (isLastRequest(responses)) accumulatedRepositories
           else {
             val url = URLBuilder.buildRepositoriesURL(organizationName, page)
             val jsonResponse = RequestBuilder.build(url.value)
@@ -39,6 +39,8 @@ object RepositoriesRetriever {
 
         loop(1, 100, Vector.empty)
       }
+
+      def isLastRequest: Int => Boolean = _ < 100
     }
   }
 

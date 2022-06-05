@@ -16,7 +16,6 @@ import util.{MapCombiner, URLBuilder}
 
 object Main extends zio.App {
 
-  val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
   implicit val token: Token = GithubTokenLoader.loadToken("GH_TOKEN")
 
   private val httpApp = Http.collectZIO[zhttp.http.Request] {
