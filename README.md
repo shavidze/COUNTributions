@@ -5,10 +5,15 @@
 **2) cd into repository**
 
 **3) Set environmental variable for extending Github's API rate limit**
+    
    - **generate github personal access token**
+
    - **execute**:
+      
       - **vim ~.bash_profile**
+     
       - **export GH_TOKEN=${your_github_token} (save and exit)**
+     
       - **source ~/.bash_profile**
 
 **4) Execute the following commands:**
